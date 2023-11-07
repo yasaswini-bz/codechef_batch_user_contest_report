@@ -1,0 +1,75 @@
+<html>
+
+<head>
+    <title>codechef contest</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    const data = myVariable;
+                    console.log(data); 
+                    var myFile = "codechef_contest_report.xlsx";
+                    var myWorkSheet = XLSX.utils.json_to_sheet(data);
+                    var myWorkBook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(myWorkBook, myWorkSheet, "myWorkSheet");
+                    XLSX.writeFile(myWorkBook, myFile);
+                });
+            }
+        });
+        
+    </script>
+    
+</head>
+
+<body>
+    <div>
+        <a href="#" id="download-btn" download="contest_participation.xlsx">
+            download report
+        </a>
+        
+    </div>
+    <div>
+        <h1>get codechef user contest participation details</h1>
+        <form action="{{ url_for('get_participate')}}" method="post" enctype="multipart/form-data" >
+            <label for="contestcode1">Enter contestcode:</label>
+            <input oninput="this.value = this.value.toUpperCase()" type= "text" name = "contestcode" id = "contestcode1" required = "required" /><br>      
+            <label for="batchusers1">upload batchusers handles</label>
+            <input type="file" name="batchusers" id="batchusers1" accept=".csv" required="required" /><br>
+            <button type="submit" value="Submit" id="button1" class="btn btn-primary btn-block btn-large">submit</button>
+        </form>
+    </div>
+    <div id="example-table"></div>
+    <link href="https://unpkg.com/tabulator-tables@4.1.4/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.1.4/dist/js/tabulator.min.js"></script>
+    <script>
+        let myVariable = JSON.parse('{{ output | tojson | safe}}');
+        console.log(myVariable);
+        var table = new Tabulator("#example-table", {
+            maxHeight:"100%",
+            rowHeight:40, 
+            data:myVariable,
+            layout:"fitColumns", 
+            columns:[ 
+                {title:"Name", field:"Name", hozAlign:"center"},
+                {title:"rollNum", field:"rollNum", hozAlign:"center"},
+                {title:"username", field:"username", hozAlign:"center"},
+                {title:"Email Id", field:"Email Id", hozAlign:"center"},
+                {title:"div", field:"div", hozAlign:"center"},
+                {title:"rating", field:"rating", hozAlign:"center"},
+                {title:"rank", field:"rank",hozAlign:"center"},
+                {title:"score", field:"score",hozAlign:"center"},
+                {title:"plag", field:"plag", hozAlign:"center"},
+                {title:"solved_count", field:"solved_count", hozAlign:"center"},
+                {title:"problem_solved", field:"problem_solved", hozAlign:"center"}
+                
+            ],
+       });
+    </script>
+    
+</body>
+
+</html>
