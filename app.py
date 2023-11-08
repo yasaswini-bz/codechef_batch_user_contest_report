@@ -16,7 +16,7 @@ def get_codechef_participation(contestcode,batchusers,headers):
   PLAG = []
   alldiv = ['A' , 'B','C','D']
   for div in alldiv:
-    time.sleep(5)
+    time.sleep(1)
     url = "https://www.codechef.com/api/rankings/"+ contestcode + div +"?itemsPerPage=100&order=asc&page=1&sortBy=rank"
     response = requests.get(url,headers=headers)
     
@@ -25,7 +25,7 @@ def get_codechef_participation(contestcode,batchusers,headers):
       print(contest_details)
       total_no_pages = contest_details['availablePages']
       for page in range(1,total_no_pages+1):
-        time.sleep(5)
+        time.sleep(1)
         url = "https://www.codechef.com/api/rankings/"+ contestcode + div +"?itemsPerPage=100&order=asc&page= "+ str(page) + "&sortBy=rank"
         response = requests.get(url,headers=headers)
         if response.status_code == 200:
