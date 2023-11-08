@@ -22,7 +22,7 @@ def get_codechef_participation(contestcode,batchusers,headers):
     
     if response.status_code == 200:
       contest_details = json.loads(response.text)
-      print(contest_details)
+      
       total_no_pages = contest_details['availablePages']
       for page in range(1,total_no_pages+1):
         time.sleep(1)
@@ -60,6 +60,7 @@ def get_codechef_participation(contestcode,batchusers,headers):
 
   d = {"username":USERNAME,"div" : DIV,"rating" : RATING,"rank" : RANK,"score":SCORE,"plag":PLAG,
        "solved_count" : COUNT,"problem_solved":PROBLEM_SOLVED}
+  print(d)
   return d
 
 app = Flask(__name__)
@@ -70,23 +71,30 @@ def get_participate():
     'accept': 'text/html,application/xhtml+xml,application/xml',
     'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
   }
-  headers['Cookie'] = 'uid=2591902; _ga_0F9XESWZ11=GS1.2.1699290821.1.0.1699290821.60.0.0; SESS93b6022d778ee317bf48f7dbffe03173=f0a85fd17ca66d76bfe557313628bef1; Authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb2RlY2hlZi5jb20iLCJzdWIiOiIyNTkxOTAyIiwidXNlcm5hbWUiOiJjaGFyYW4wNCIsImlhdCI6MTY5OTI5Mjg2NywibmJmIjoxNjk5MjkyODY3LCJleHAiOjE3MDEyODcyNjd9.NxS9IR2YJHzBFJEhH2pJ15nYgq-y8OXSctvu-QsxTYk; _gid=GA1.2.530585547.1699425162; _clck=lr6tzx|2|fgj|0|1402; _gat_UA-141612136-1=1; _clsk=50fcy7|1699428507342|4|1|q.clarity.ms/collect; _ga_C8RQQ7NY18=GS1.1.1699427936.6.1.1699428515.50.0.0; _ga=GA1.2.1753313708.1699006727; userkey=56a7ba633e70a409025ae6f4d029a938'
-  headers["X-Csrf-Token"]  = "b03012b1c0d6827b4f3aff29f743e9924fd2fb54f26d1a34f4bfa30735886254"
+  headers['Cookie'] = 'SESS93b6022d778ee317bf48f7dbffe03173=617255d5f1aefa775e037a0c9aac56c4; Authorization=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb2RlY2hlZi5jb20iLCJzdWIiOiIyNTE4MTAwIiwidXNlcm5hbWUiOiJ5YXNhc3dpbiIsImlhdCI6MTY5OTQyNDI0MSwibmJmIjoxNjk5NDI0MjQxLCJleHAiOjE3MDE0MTg2NDF9.jwc9x5GiWW25mTCjpWQkIyWzza7UtvZmEYpHz_Z5Ymk; uid=2518100; userkey=56a7ba633e70a409025ae6f4d029a938; mp_d7f79c10b89f9fa3026f2fb08d3cf36d_mixpanel=%7B%22distinct_id%22%3A%20%22%24device%3A18bad93e297930-0dbb0c27b12361-26031051-df602-18bad93e297930%22%2C%22%24device_id%22%3A%20%2218bad93e297930-0dbb0c27b12361-26031051-df602-18bad93e297930%22%2C%22%24initial_referrer%22%3A%20%22%24direct%22%2C%22%24initial_referring_domain%22%3A%20%22%24direct%22%2C%22%24search_engine%22%3A%20%22google%22%7D'
+  headers["X-Csrf-Token"]  = "b7e815b87cb8171de2714446d089b103246bdf6eee8d895ec35931bd78c6bac2"
   batchusers = request.files['batchusers']
   if batchusers:
       batchusers = pd.read_csv(batchusers)
       contestcode = request.form['contestcode']
       users = get_codechef_participation(contestcode, batchusers,headers)
-      print(users)
+      #print(users)
       if users:
         dataframe = pd.DataFrame(users)
         all_handles = batchusers
         all_handles.rename(columns={'Roll No': 'rollNum'}, inplace=True)
         all_handles.rename(columns={'CODECHEF': 'username'}, inplace=True)
         codechef_handles = all_handles[['Name', 'rollNum', "username","Email Id"]]
-        
         merged_df = pd.merge(codechef_handles, dataframe, on='username', how="left")
         merged_df = merged_df[['Name','rollNum','username','Email Id','div','rating','rank','score','plag','solved_count','problem_solved']]
+        merged_df["div"].fillna("Not participated", inplace = True)
+        merged_df["rating"].fillna("Not participated", inplace = True)
+        merged_df["rank"].fillna("Not participated", inplace = True)
+        merged_df["score"].fillna("Not participated", inplace = True)
+        merged_df["plag"].fillna("Not participated", inplace = True)
+        merged_df["solved_count"].fillna("Not participated", inplace = True)
+        merged_df["problem_solved"].fillna("Not participated", inplace = True)
+        #print(merged_df)
         return render_template('home.html', output=merged_df.to_dict(orient='records'))
     
   data = {
